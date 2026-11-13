@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_jarvis_card"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="20dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_jarvis_chip" />
+
+    <!-- Top Header: Title & Search -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Siya AI"
+            android:textColor="?attr/themeTextPrimary"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnSearchHistory"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_search"
+            app:tint="?attr/themeTextPrimary"
+            android:contentDescription="Search" />
+    </LinearLayout>
+
+    <!-- Search Input (Initially Hidden, Toggled on Search Click) -->
+    <EditText
+        android:id="@+id/etSearchQuery"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_input_field"
+        android:hint="Search conversations, code, images..."
+        android:textColor="?attr/themeTextPrimary"
+        android:textColorHint="?attr/themeTextMuted"
+        android:textSize="13sp"
+        android:paddingHorizontal="12dp"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"
+        android:singleLine="true" />
+
+    <!-- Quick Navigation Items (ChatGPT Sidebar Style) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="12dp">
+
+        <!-- 1. Images Gallery -->
+        <LinearLayout
+            android:id="@+id/navImages"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:paddingHorizontal="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_gallery_image"
+                app:tint="?attr/themeTextPrimary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Images"
+                android:textColor="?attr/themeTextPrimary"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginStart="16dp" />
+
+            <TextView
+                android:id="@+id/tvImagesCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                android:textColor="?attr/themeTextMuted"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif" />
+        </LinearLayout>
+
+        <!-- 2. Projects (Code Studio Projects) -->
+        <LinearLayout
+            android:id="@+id/navProjects"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:paddingHorizontal="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_code_chip"
+                app:tint="?attr/themeTextPrimary" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Projects"
+                android:textColor="?attr/themeTextPrimary"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginStart="16dp" />
+
+            <TextView
+                android:id="@+id/tvProjectsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Code Studio"
+                android:textColor="?attr/themeTextMuted"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/themeCardBorder"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Section Label: Chats -->
+    <TextView
+        android:id="@+id/tvSectionChats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chats"
+        android:textColor="?attr/themeTextMuted"
+        android:textSize="13sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="6dp" />
+
+    <TextView
+        android:id="@+id/tvEmptyHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="No previous conversations found"
+        android:textColor="?attr/themeTextMuted"
+        android:textSize="13sp"
+        android:paddingVertical="18dp"
+        android:visibility="gone" />
+
+    <!-- Chat Sessions List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChatSessions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="true"
+        android:maxHeight="260dp"
+        android:clipToPadding="false"
+        android:paddingBottom="6dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/themeCardBorder"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Bottom Action Dock (New Chat Pill, Settings Icon, Voice Mic Button) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Chat Pill Button -->
+        <LinearLayout
+            android:id="@+id/btnBottomNewChat"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_jarvis_pill_button"
+            android:paddingHorizontal="18dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_edit"
+                app:tint="#FFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chat"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Settings Icon Button -->
+        <ImageButton
+            android:id="@+id/btnBottomSettings"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_jarvis_icon_square"
+            android:src="@drawable/ic_nav_settings"
+            app:tint="?attr/themeTextPrimary"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Settings" />
+
+        <!-- Voice Mode Button -->
+        <ImageButton
+            android:id="@+id/btnBottomVoice"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_jarvis_pill_button"
+            android:src="@drawable/ic_mic_jarvis"
+            app:tint="#FFFFFF"
+            android:contentDescription="Voice Mode" />
+    </LinearLayout>
+
+</LinearLayout>
