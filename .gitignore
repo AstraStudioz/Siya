@@ -19,3 +19,4 @@ debug.keystore
 *.zip
 app/build/
 *.apk
+!app/src/main/assets/apk_template.apk

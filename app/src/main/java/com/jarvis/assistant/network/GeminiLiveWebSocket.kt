@@ -790,6 +790,33 @@ class GeminiLiveWebSocket(
                             })
                         })
 
+                        // 23. build_app_apk
+                        put(JSONObject().apply {
+                            put("name", "build_app_apk")
+                            put("description", "Compiles user project code (HTML5/CSS/JavaScript or Python web application) into an installable Android APK directly on-device. Saves the APK into /sdcard/Download/ and triggers a system notification allowing instant 1-tap installation.")
+                            put("parameters", JSONObject().apply {
+                                put("type", "OBJECT")
+                                put("properties", JSONObject().apply {
+                                    put("project_title", JSONObject().apply {
+                                        put("type", "STRING")
+                                        put("description", "A concise name for the app (e.g. 'Calculator', 'SnakeGame', 'TodoApp')")
+                                    })
+                                    put("code", JSONObject().apply {
+                                        put("type", "STRING")
+                                        put("description", "The complete runnable code (HTML5/CSS/JS or Python script) for the application")
+                                    })
+                                    put("language", JSONObject().apply {
+                                        put("type", "STRING")
+                                        put("description", "Programming language: 'html', 'javascript', or 'python'")
+                                    })
+                                })
+                                put("required", JSONArray().apply {
+                                    put("project_title")
+                                    put("code")
+                                })
+                            })
+                        })
+
 
                     })
                 }))
@@ -1059,26 +1086,27 @@ class GeminiLiveWebSocket(
     private var mediaChunksSent = 0
     private val lastVideoFrameSentAt = AtomicLong(0L)
 
-    /**
-     * Streams real-time screen frames to Gemini Live (BidiGenerateContent).
-     */
-    fun sendMediaChunk(jpegBytes: ByteArray) {
+    fun sendMediaChunk(jpegBytes: ByteArray, force: Boolean = false) {
         if (!isConnected.get() || !isSetupComplete.get() || jpegBytes.isEmpty()) return
         // Gemini Live accepts video as a continuous realtimeInput stream at up to 1 FPS.
-        // Enforce the cap here so periodic and post-action frames share one rate limiter.
+        // Enforce the cap here so periodic frames don't saturate, but allow forced snapshots through immediately.
         val now = android.os.SystemClock.elapsedRealtime()
-        while (true) {
-            val previous = lastVideoFrameSentAt.get()
-            if (now - previous < 1000L) return
-            if (lastVideoFrameSentAt.compareAndSet(previous, now)) break
+        if (!force) {
+            while (true) {
+                val previous = lastVideoFrameSentAt.get()
+                if (now - previous < 1000L) return
+                if (lastVideoFrameSentAt.compareAndSet(previous, now)) break
+            }
+        } else {
+            lastVideoFrameSentAt.set(now)
         }
         try {
             val base64Image = Base64.encodeToString(jpegBytes, Base64.NO_WRAP)
             val json = buildMediaChunkJson(base64Image)
             val sent = webSocket?.send(json) ?: false
             mediaChunksSent++
-            if (mediaChunksSent % 10 == 1) {
-                Log.i(TAG, "Sent video frame #$mediaChunksSent to Gemini Live (sent=$sent, size=${jpegBytes.size / 1024} KB)")
+            if (force || mediaChunksSent % 10 == 1) {
+                Log.i(TAG, "Sent video frame #$mediaChunksSent to Gemini Live (force=$force, sent=$sent, size=${jpegBytes.size / 1024} KB)")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error sending media chunk: ${e.message}")

@@ -44,8 +44,8 @@ import java.util.concurrent.TimeUnit
 object UpdateManager {
 
     private const val TAG = "UpdateManager"
-    const val PRIMARY_UPDATE_URL = "https://github.com/AstraStudioz/Siya-Ai/releases/latest/download/update.json"
-    const val FALLBACK_API_URL = "https://api.github.com/repos/AstraStudioz/Siya-Ai/releases/latest"
+    const val PRIMARY_UPDATE_URL = "https://github.com/AstraStudioz/Siya/releases/latest/download/update.json"
+    const val FALLBACK_API_URL = "https://api.github.com/repos/AstraStudioz/Siya/releases/latest"
 
     const val NOTIFICATION_CHANNEL_ID = "siya_updates"
     const val NOTIFICATION_ID = 2001
@@ -264,8 +264,8 @@ object UpdateManager {
             val bodyText = root.getNullableString("body")?.ifBlank { "New release available." } ?: "New release available."
             val publishedAt = root.getNullableString("published_at") ?: ""
 
-            // Extract numeric version code from tag name (e.g., debug-apk-build-147-1 -> 147, or v1.0.147 -> 147)
-            val tagVersionCode = Regex("""\b(\d+)\b""").findAll(tagName).lastOrNull()?.value?.toIntOrNull()
+            // Extract numeric version code from tag name (e.g. v5.0 -> 500, v4.9 -> 490, build-147 -> 147)
+            val tagVersionCode = parseVersionCode(tagName)
 
             val assetsElement = root.get("assets")
             val assets = if (assetsElement != null && assetsElement.isJsonArray) {
@@ -290,7 +290,7 @@ object UpdateManager {
                     updateJsonUrl = downloadUrl
                 } else if (name.endsWith(".apk", ignoreCase = true)) {
                     apkUrl = downloadUrl
-                    apkNameVersionCode = Regex("""\b(\d+)\b""").findAll(name).lastOrNull()?.value?.toIntOrNull()
+                    apkNameVersionCode = parseVersionCode(name)
                 }
             }
 
@@ -363,5 +363,30 @@ object UpdateManager {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         notificationManager?.notify(NOTIFICATION_ID, notification)
+    }
+
+    /**
+     * Parses version code from tag name (e.g., "v5.0" -> 500, "v4.9" -> 490, "v1.0.152" -> 152, "147" -> 147).
+     */
+    fun parseVersionCode(tagOrName: String): Int? {
+        val clean = tagOrName.removePrefix("v").substringBefore(".apk").trim()
+        val parts = clean.split(".")
+        if (parts.size == 2) {
+            val major = parts[0].filter { it.isDigit() }.toIntOrNull()
+            val minor = parts[1].filter { it.isDigit() }.toIntOrNull()
+            if (major != null && minor != null) {
+                return major * 100 + minor * 10
+            }
+        } else if (parts.size >= 3) {
+            val major = parts[0].filter { it.isDigit() }.toIntOrNull()
+            val minor = parts[1].filter { it.isDigit() }.toIntOrNull()
+            val last = parts.last().filter { it.isDigit() }.toIntOrNull()
+            if (major == 1 && minor == 0 && last != null) {
+                return last
+            } else if (major != null && minor != null && last != null) {
+                return major * 100 + minor * 10 + last
+            }
+        }
+        return Regex("""\b(\d+)\b""").findAll(tagOrName).lastOrNull()?.value?.toIntOrNull()
     }
 }

@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -482,8 +483,25 @@ class CodeStudioActivity : AppCompatActivity() {
                 var successfulModel = ""
                 var lastErrorMessage = ""
 
+                // 0. Antigravity MCP Agent Engine
+                if (preferences.antigravityEnabled || codeProvider.equals("antigravity", ignoreCase = true)) {
+                    try {
+                        val mcp = com.jarvis.assistant.network.McpClient(
+                            preferences.antigravityEndpoint,
+                            preferences.antigravityToken.takeIf { it.isNotBlank() }
+                        )
+                        val mcpRes = mcp.generateWithAntigravity(finalUserPrompt, "code")
+                        if (mcpRes.success && mcpRes.output.isNotBlank()) {
+                            textOutput = mcpRes.output
+                            successfulModel = "Google Antigravity MCP Core"
+                        }
+                    } catch (e: Exception) {
+                        Log.w("CodeStudio", "Antigravity MCP error: ${e.message}")
+                    }
+                }
+
                 // 1. Try Groq or OpenAI or Custom if selected and configured
-                if ((codeProvider == "groq" || codeProvider == "openai" || codeProvider == "custom") && codeKey.isNotBlank()) {
+                if (textOutput.isBlank() && (codeProvider == "groq" || codeProvider == "openai" || codeProvider == "custom") && codeKey.isNotBlank()) {
                     try {
                         val endpoint = when (codeProvider) {
                             "groq" -> "https://api.groq.com/openai/v1/chat/completions"
@@ -786,68 +804,27 @@ class CodeStudioActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val timestamp = System.currentTimeMillis()
-                val safeTitle = currentProjectTitle.replace("[^a-zA-Z0-9]".toRegex(), "_").take(20)
-                val apkName = "SiyaApp_${safeTitle}_$timestamp.apk"
-                val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                if (!downloadDir.exists()) downloadDir.mkdirs()
-                val apkFile = File(downloadDir, apkName)
+            val result = com.jarvis.assistant.util.ApkBuilderEngine.buildApk(
+                context = this@CodeStudioActivity,
+                projectTitle = currentProjectTitle,
+                code = codeToExport,
+                language = "html"
+            )
 
-                // Package user's standalone HTML/CSS/JS project into a distribution Android APK archive
-                val baseApkPath = applicationInfo.sourceDir
-                val baseFile = File(baseApkPath)
-
-                if (baseFile.exists() && baseFile.canRead()) {
-                    // Copy existing signed APK structure and embed project assets/www/index.html
-                    FileInputStream(baseFile).use { fis ->
-                        ZipInputStream(fis).use { zis ->
-                            FileOutputStream(apkFile).use { fos ->
-                                ZipOutputStream(fos).use { zos ->
-                                    var entry: ZipEntry? = zis.nextEntry
-                                    while (entry != null) {
-                                        // Skip old user assets if any
-                                        if (!entry.name.startsWith("assets/user_project/")) {
-                                            zos.putNextEntry(ZipEntry(entry.name))
-                                            zis.copyTo(zos)
-                                            zos.closeEntry()
-                                        }
-                                        entry = zis.nextEntry
-                                    }
-                                    // Inject user's project into assets
-                                    val projectEntry = ZipEntry("assets/user_project/index.html")
-                                    zos.putNextEntry(projectEntry)
-                                    zos.write(codeToExport.toByteArray(StandardCharsets.UTF_8))
-                                    zos.closeEntry()
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    // Fallback to standalone web application APK archive
-                    FileOutputStream(apkFile).use { fos ->
-                        ZipOutputStream(fos).use { zos ->
-                            val entry = ZipEntry("assets/www/index.html")
-                            zos.putNextEntry(entry)
-                            zos.write(codeToExport.toByteArray(StandardCharsets.UTF_8))
-                            zos.closeEntry()
-                        }
-                    }
-                }
-
-                withContext(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
+                if (result.success && result.apkFile != null) {
                     Toast.makeText(
                         this@CodeStudioActivity,
-                        "APK packaged successfully to:\n/sdcard/Download/$apkName",
+                        "APK packaged successfully to:\n/sdcard/Download/${result.apkFile.name}",
                         Toast.LENGTH_LONG
                     ).show()
 
-                    // Trigger installer intent
+                    // Trigger direct package installer intent
                     try {
                         val apkUri = FileProvider.getUriForFile(
                             this@CodeStudioActivity,
                             "${packageName}.provider",
-                            apkFile
+                            result.apkFile
                         )
                         val installIntent = Intent(Intent.ACTION_VIEW).apply {
                             setDataAndType(apkUri, "application/vnd.android.package-archive")
@@ -855,12 +832,10 @@ class CodeStudioActivity : AppCompatActivity() {
                         }
                         startActivity(installIntent)
                     } catch (_: Exception) {}
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                } else {
                     Toast.makeText(
                         this@CodeStudioActivity,
-                        "Export APK failed: ${e.message}",
+                        "Export APK failed: ${result.message}",
                         Toast.LENGTH_LONG
                     ).show()
                 }

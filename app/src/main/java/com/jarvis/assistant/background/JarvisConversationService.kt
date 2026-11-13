@@ -256,21 +256,20 @@ class JarvisConversationService : Service() {
             val instance = activeInstance ?: return
             val ws = instance.liveWebSocket ?: return
             if (!ws.isSessionReady() || jpegBytes.isEmpty()) return
-            ws.sendMediaChunk(jpegBytes)
+            ws.sendMediaChunk(jpegBytes, force = true)
         }
 
-        fun sendCameraFrame(jpegBytes: ByteArray) {
+        fun sendCameraFrame(jpegBytes: ByteArray, force: Boolean = false) {
             val instance = activeInstance ?: return
             val ws = instance.liveWebSocket ?: return
             if (!ws.isSessionReady() || jpegBytes.isEmpty()) return
-            ws.sendMediaChunk(jpegBytes)
+            ws.sendMediaChunk(jpegBytes, force = force)
         }
 
         fun sendCameraContextNote(text: String) {
-            val instance = activeInstance ?: return
-            val ws = instance.liveWebSocket ?: return
-            if (!ws.isSessionReady() || text.isBlank()) return
-            ws.sendClientContent(text, turnComplete = false)
+            // Neutralized: Do NOT send unsolicited text prompts to Gemini Live on camera open/close,
+            // as this causes Gemini to speak unprompted without the user asking anything.
+            Log.d("JarvisConvService", "Camera context event: $text (neutralized - avoiding unsolicited speech)")
         }
 
         fun stopScreenCapture() {
@@ -2634,6 +2633,30 @@ class JarvisConversationService : Service() {
                         startActivity(intent)
                         result.put("success", true)
                         result.put("message", "Opened Siya AI Live Multimodal Camera Vision screen.")
+                    }
+
+                    "build_app_apk" -> {
+                        val title = args.optString("project_title", "SiyaApp")
+                        val code = args.optString("code", "")
+                        val lang = args.optString("language", "html")
+                        if (code.isBlank()) {
+                            result.put("success", false)
+                            result.put("message", "Cannot compile empty code.")
+                        } else {
+                            val buildRes = kotlinx.coroutines.runBlocking {
+                                com.jarvis.assistant.util.ApkBuilderEngine.buildApk(
+                                    context = this@JarvisConversationService,
+                                    projectTitle = title,
+                                    code = code,
+                                    language = lang
+                                )
+                            }
+                            result.put("success", buildRes.success)
+                            result.put("message", buildRes.message)
+                            if (buildRes.apkFile != null) {
+                                result.put("apk_path", buildRes.apkFile.absolutePath)
+                            }
+                        }
                     }
 
 

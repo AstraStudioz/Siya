@@ -245,7 +245,7 @@ class CameraVisionActivity : AppCompatActivity() {
             if (scaledBitmap !== bitmap) scaledBitmap.recycle()
             bitmap.recycle()
             if (jpegBytes.isNotEmpty()) {
-                JarvisConversationService.sendCameraFrame(jpegBytes)
+                JarvisConversationService.sendCameraFrame(jpegBytes, force = true)
             }
         } catch (_: Exception) {}
     }

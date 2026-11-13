@@ -32,12 +32,12 @@ class UpdatesFragment : Fragment() {
 
     private fun renderFeatureUpdates() {
         val features = listOf(
-            FeatureNotice("Multi-Provider Engine", "OpenAI DALL-E 3 & Groq Cloud Code Studio", "Full multi-provider architecture for Image and Code generation. Switch between Groq (Llama 3.3 70B & DeepSeek R1), OpenAI (DALL-E 3 & GPT-4o), Google Gemini, and Custom providers with direct API key links.", "NEW IN v4.9"),
-            FeatureNotice("Gemini 3.1 Live", "Default Gemini 3.1 Flash Live Preview Engine", "Pre-configured with gemini-3.1-flash-live-preview for ultra-fast, natural, human-like bidirectional live voice conversation.", "NEW IN v4.9"),
-            FeatureNotice("History Drawer", "Dedicated Images Gallery & Saved Projects", "ChatGPT-style drawer with dedicated sections for all generated images and Code Studio projects with instant code preview without forced redirects.", "NEW IN v4.9"),
-            FeatureNotice("Voice Stability", "Seamless Turn Completion & Zero Reconnect Loops", "Fixed speech-end stream protocol to prevent WebSocket connection resets and reconnection loops during live speech.", "NEW IN v4.9"),
-            FeatureNotice("Notification Reader", "Smart Hands-Free Phone Notification Alerts", "Siya AI reads incoming notifications (WhatsApp, SMS, calls) aloud on demand whenever you ask 'mere notification padho'.", "UPGRADED"),
-            FeatureNotice("Code Studio", "Live Web IDE & Python Runner", "Build, edit, and preview HTML/CSS/JS and Python projects with live streaming code preview and APK export.", "UPGRADED")
+            FeatureNotice("Google Antigravity Core", "MCP Architecture for Autonomous Code, Image & Video", "Integrated Model Context Protocol client allowing Siya AI to delegate complex coding, tool execution, and multimedia tasks directly to Antigravity agents with zero limits.", "NEW IN v5.0"),
+            FeatureNotice("Instant On-Device APK Compiler", "Build Installable Android APKs Directly on Phone", "Convert any generated HTML5/JS or Python web project into a standalone Android APK directly in your Download folder with a 1-tap installation alert.", "NEW IN v5.0"),
+            FeatureNotice("Precision Live Camera & Vision", "Immediate High-Res Frame Capture & Zero Babbling", "Completely resolved unsolicited speech on camera start. Visual snapshots are delivered with forced real-time priority, ensuring accurate answers without excuses.", "NEW IN v5.0"),
+            FeatureNotice("In-App Auto-Update Engine", "1-Tap GitHub Releases Download & Progress Bar", "Detects newly published APK releases immediately from AstraStudioz/Siya. Download and install seamless updates within the app with progress monitoring.", "NEW IN v5.0"),
+            FeatureNotice("Multi-Provider Engine", "OpenAI DALL-E 3 & Groq Cloud Code Studio", "Full multi-provider architecture for Image and Code generation. Switch between Groq (Llama 3.3 70B & DeepSeek R1), OpenAI (DALL-E 3 & GPT-4o), Google Gemini, and Custom providers with direct API key links.", "UPGRADED"),
+            FeatureNotice("ChatGPT History & Notification Reader", "Images Gallery & On-Demand Phone Notification Alerts", "Full slide-out history drawer for chats, generated images, and projects, plus hands-free notification reading.", "UPGRADED")
         )
         val list = binding.updatesList
         list.removeAllViews()
@@ -84,7 +84,43 @@ class UpdatesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         com.jarvis.assistant.util.ThemeManager.applyDynamicBackground(binding.root)
+        setupCheckUpdatesButton()
         observeAvailableUpdate()
+    }
+
+    private fun setupCheckUpdatesButton() {
+        binding.btnCheckUpdatesManual.setOnClickListener {
+            binding.btnCheckUpdatesManual.isEnabled = false
+            binding.btnCheckUpdatesManual.text = "Checking..."
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = com.jarvis.assistant.update.UpdateManager.checkForUpdate(isManual = true)
+                binding.btnCheckUpdatesManual.isEnabled = true
+                binding.btnCheckUpdatesManual.text = "Check Updates"
+                when (result) {
+                    is com.jarvis.assistant.data.update.UpdateCheckResult.UpdateAvailable -> {
+                        android.widget.Toast.makeText(
+                            requireContext(),
+                            "New update v${result.updateInfo.versionName} is available!",
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is com.jarvis.assistant.data.update.UpdateCheckResult.UpToDate -> {
+                        android.widget.Toast.makeText(
+                            requireContext(),
+                            "Siya AI is up to date (v${com.jarvis.assistant.BuildConfig.VERSION_NAME})",
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is com.jarvis.assistant.data.update.UpdateCheckResult.Error -> {
+                        android.widget.Toast.makeText(
+                            requireContext(),
+                            "Update check failed: ${result.message}",
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
     }
 
     private fun observeAvailableUpdate() {

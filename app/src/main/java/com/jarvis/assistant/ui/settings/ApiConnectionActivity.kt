@@ -124,6 +124,11 @@ class ApiConnectionActivity : AppCompatActivity() {
             "custom" -> binding.rbChatCustom.isChecked = true
             else -> binding.rbChatGeminiLive.isChecked = true
         }
+
+        // Antigravity MCP Core
+        binding.switchAntigravity.isChecked = preferences.antigravityEnabled
+        binding.etAntigravityEndpoint.setText(preferences.antigravityEndpoint)
+        binding.etAntigravityToken.setText(preferences.antigravityToken)
     }
 
     private fun updateImageProviderUI(provider: String) {
@@ -269,6 +274,11 @@ class ApiConnectionActivity : AppCompatActivity() {
         // Test Code Generation
         binding.btnTestCodeGeneration.setOnClickListener {
             testCodeGeneration()
+        }
+
+        // Test Antigravity MCP Connection
+        binding.btnTestAntigravity.setOnClickListener {
+            testAntigravityConnection()
         }
 
         // Save & Apply
@@ -739,11 +749,45 @@ class ApiConnectionActivity : AppCompatActivity() {
 
         preferences.chatProvider = chatProvider
 
+        preferences.antigravityEnabled = binding.switchAntigravity.isChecked
+        preferences.antigravityEndpoint = binding.etAntigravityEndpoint.text?.toString()?.trim()
+            ?.ifBlank { com.jarvis.assistant.network.McpClient.DEFAULT_ENDPOINT }
+            ?: com.jarvis.assistant.network.McpClient.DEFAULT_ENDPOINT
+        preferences.antigravityToken = binding.etAntigravityToken.text?.toString()?.trim() ?: ""
+
         com.jarvis.assistant.background.JarvisConversationService.clearLiveError()
         com.jarvis.assistant.background.JarvisConversationService.restartSession()
 
-        Toast.makeText(this, "API & Provider settings saved!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "API, Antigravity & Provider settings saved!", Toast.LENGTH_SHORT).show()
         finish()
+    }
+
+    private fun testAntigravityConnection() {
+        val endpoint = binding.etAntigravityEndpoint.text?.toString()?.trim()
+            ?.ifBlank { com.jarvis.assistant.network.McpClient.DEFAULT_ENDPOINT }
+            ?: com.jarvis.assistant.network.McpClient.DEFAULT_ENDPOINT
+        val token = binding.etAntigravityToken.text?.toString()?.trim()
+
+        binding.btnTestAntigravity.isEnabled = false
+        binding.tvAntigravityStatus.setTextColor(Color.parseColor("#3B82F6"))
+        binding.tvAntigravityStatus.text = "Pinging MCP endpoint..."
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val client = com.jarvis.assistant.network.McpClient(endpoint, token)
+            val isHealthy = client.checkHealth()
+            val tools = if (isHealthy) client.listTools() else emptyList()
+
+            withContext(Dispatchers.Main) {
+                binding.btnTestAntigravity.isEnabled = true
+                if (isHealthy) {
+                    binding.tvAntigravityStatus.setTextColor(Color.parseColor("#22C55E"))
+                    binding.tvAntigravityStatus.text = "ONLINE • ${tools.size} tools discovered"
+                } else {
+                    binding.tvAntigravityStatus.setTextColor(Color.parseColor("#EAB308"))
+                    binding.tvAntigravityStatus.text = "OFFLINE • Local server standby"
+                }
+            }
+        }
     }
 
     override fun onDestroy() {

@@ -152,6 +152,11 @@ class AppPreferences(private val context: Context) {
         private const val KEY_GROQ_API_KEY = "key_groq_api_key"
         private const val KEY_GROQ_MODEL = "key_groq_model"
 
+        private const val KEY_ANTIGRAVITY_ENABLED = "key_antigravity_enabled"
+        private const val KEY_ANTIGRAVITY_ENDPOINT = "key_antigravity_endpoint"
+        private const val KEY_ANTIGRAVITY_TOKEN = "key_antigravity_token"
+        private const val KEY_ACTIVE_MCP_SERVER = "key_active_mcp_server"
+
         const val KEY_UPDATE_AUTO_CHECK = "key_update_auto_check"
         const val KEY_UPDATE_NOTIFICATIONS = "key_update_notifications"
         const val KEY_UPDATE_WIFI_ONLY = "key_update_wifi_only"
@@ -470,6 +475,22 @@ class AppPreferences(private val context: Context) {
     var groqModel: String
         get() = prefs.getString(KEY_GROQ_MODEL, "llama-3.3-70b-versatile") ?: "llama-3.3-70b-versatile"
         set(value) = prefs.edit().putString(KEY_GROQ_MODEL, value).apply()
+
+    var antigravityEnabled: Boolean
+        get() = prefs.getBoolean(KEY_ANTIGRAVITY_ENABLED, true)
+        set(value) = prefs.edit().putBoolean(KEY_ANTIGRAVITY_ENABLED, value).apply()
+
+    var antigravityEndpoint: String
+        get() = prefs.getString(KEY_ANTIGRAVITY_ENDPOINT, "http://127.0.0.1:8080/mcp") ?: "http://127.0.0.1:8080/mcp"
+        set(value) = prefs.edit().putString(KEY_ANTIGRAVITY_ENDPOINT, value).apply()
+
+    var antigravityToken: String
+        get() = getSecureString(KEY_ANTIGRAVITY_TOKEN)
+        set(value) = setSecureString(KEY_ANTIGRAVITY_TOKEN, value)
+
+    var activeMcpServer: String
+        get() = prefs.getString(KEY_ACTIVE_MCP_SERVER, "antigravity") ?: "antigravity"
+        set(value) = prefs.edit().putString(KEY_ACTIVE_MCP_SERVER, value).apply()
 
     // Gemini Image Quota tracking: Remember quota/plan error for 24 hours
     var lastGeminiImageQuotaErrorTime: Long
