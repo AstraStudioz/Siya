@@ -9,23 +9,25 @@ Siya AI is an advanced, ultra-responsive multimodal AI assistant designed for An
 
 Get the latest official build directly on your Android device:
 
-[![Download APK](https://img.shields.io/badge/Download-Siya%20AI%20v4.9%20APK-blue?style=for-the-badge&logo=android)](https://github.com/AstraStudioz/Siya/releases/download/v4.9/SiyaAi-v4.9.apk)
+[![Download APK](https://img.shields.io/badge/Download-Siya%20AI%20v5.0%20APK-blue?style=for-the-badge&logo=android)](https://github.com/AstraStudioz/Siya/releases/download/v5.0/SiyaAi-v5.0.apk)
 
-- **Latest Release**: [Siya AI v4.9](https://github.com/AstraStudioz/Siya/releases/tag/v4.9)
-- **Direct Download**: [SiyaAi-v4.9.apk (117 MB)](https://github.com/AstraStudioz/Siya/releases/download/v4.9/SiyaAi-v4.9.apk)
+- **Latest Release**: [Siya AI v5.0](https://github.com/AstraStudioz/Siya/releases/tag/v5.0)
+- **Direct Download**: [SiyaAi-v5.0.apk (117 MB)](https://github.com/AstraStudioz/Siya/releases/download/v5.0/SiyaAi-v5.0.apk)
 - **All Releases**: [View All Releases](https://github.com/AstraStudioz/Siya/releases)
 
 ---
 
-## ✨ Key Features
+## ✨ Key Features (v5.0)
 
-- 🎙️ **Real-Time Voice Assistant**: Ultra-low latency voice chat powered by Gemini 3.1 Flash Live Preview with full Hindi and English fluency.
-- 👁️ **Live Camera Vision**: Point your phone camera and get instant, context-aware analysis and answers from Siya AI.
-- 📱 **Screen Sharing Assistance**: Share your screen to get real-time guidance, explanations, and productivity help.
-- 💻 **Integrated Code Studio**: Generate, edit, preview web applications live, and export project ZIP archives directly from your phone.
+- 🤖 **Google Antigravity & MCP Core**: Autonomous code, image, and video generation powered by Model Context Protocol (MCP) client with tool discovery and zero credit limits.
+- 📦 **Instant On-Device APK Compiler**: Automatically compiles generated HTML5/JS and Python web applications into standalone installable Android APKs directly into `/sdcard/Download/` with 1-tap installation notifications.
+- 👁️ **Ultra-Clear Live Camera & Screen Vision**: Immediate high-resolution snapshot priority, zero unprompted babbling, and confident multimodal spatial reasoning.
+- 🔄 **In-App Auto-Update & GitHub Sync**: Built-in update detector displaying a premium update banner and 1-tap in-app download sheet directly from GitHub Releases.
+- 🎙️ **Real-Time Voice Assistant**: Ultra-low latency voice chat powered by Gemini 3.1 Flash Live Preview with full Hindi, English, and regional Indian language fluency.
+- 💻 **Integrated Code Studio**: Live streaming IDE, Python runner, and visual preview designed with pure SVG vector icons.
 - 🎨 **Multi-Provider AI Image Generator**: Create stunning visuals with OpenAI DALL-E 3, Gemini Imagen 3, Pollinations, or custom API endpoints.
 - 🔔 **Smart Notification Reader**: Hands-free convenience — ask Siya AI to read and summarize your WhatsApp, SMS, and system alerts aloud.
-- 🗂️ **ChatGPT-Style History Drawer**: Easily access past conversations, visual media galleries, and saved coding projects with instant previews.
+- 🗂️ **ChatGPT-Style History Drawer**: Seamlessly browse previous conversations, generated image galleries, and saved coding projects with instant previews.
 
 ---
 
