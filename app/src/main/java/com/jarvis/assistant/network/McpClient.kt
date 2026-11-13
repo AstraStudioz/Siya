@@ -56,7 +56,7 @@ class McpClient(
         try {
             val reqBuilder = Request.Builder()
                 .url(endpointUrl)
-                .header("User-Agent", "SiyaAI-Antigravity/5.0")
+                .header("User-Agent", "SiyaAI-Antigravity/5.1")
 
             if (!authToken.isNullOrBlank()) {
                 reqBuilder.header("Authorization", "Bearer $authToken")
@@ -179,7 +179,7 @@ class McpClient(
             .post(requestBody)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
-            .header("User-Agent", "SiyaAI-Antigravity/5.0")
+            .header("User-Agent", "SiyaAI-Antigravity/5.1")
 
         if (!authToken.isNullOrBlank()) {
             reqBuilder.header("Authorization", "Bearer $authToken")

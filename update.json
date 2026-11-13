@@ -1,0 +1,10 @@
+{
+  "versionCode": 510,
+  "versionName": "5.1",
+  "changelog": "• Continuous microphone pipeline with zero frame drops during thinking\n• 40ms sensitive speech detection & natural conversational barge-in\n• Official Gemini Live clientContent & turnComplete protocol\n• In-app direct updater with progress bar and 1-tap install",
+  "apkUrl": "https://github.com/AstraStudioz/Siya/releases/download/v5.1/SiyaAi-v5.1.apk",
+  "apkSha256": "880306bb3917025743a005716eee68b3c862aa4b728b18d7d79aab990dbb54dc",
+  "telegramUrl": "https://t.me/AstraStudiosPvt",
+  "mandatory": false,
+  "publishedAt": "2026-11-13T06:30:00Z"
+}

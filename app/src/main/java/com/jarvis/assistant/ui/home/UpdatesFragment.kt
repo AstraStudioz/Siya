@@ -32,6 +32,7 @@ class UpdatesFragment : Fragment() {
 
     private fun renderFeatureUpdates() {
         val features = listOf(
+            FeatureNotice("Continuous Voice Pipeline", "Zero Mic Drops & 40ms Sensitive Speech VAD", "Completely unblocked microphone audio during thinking states, reduced speech onset detection to 40ms, enabled natural conversational barge-in, and standardized Gemini Live clientContent protocol.", "NEW IN v5.1"),
             FeatureNotice("Google Antigravity Core", "MCP Architecture for Autonomous Code, Image & Video", "Integrated Model Context Protocol client allowing Siya AI to delegate complex coding, tool execution, and multimedia tasks directly to Antigravity agents with zero limits.", "NEW IN v5.0"),
             FeatureNotice("Instant On-Device APK Compiler", "Build Installable Android APKs Directly on Phone", "Convert any generated HTML5/JS or Python web project into a standalone Android APK directly in your Download folder with a 1-tap installation alert.", "NEW IN v5.0"),
             FeatureNotice("Precision Live Camera & Vision", "Immediate High-Res Frame Capture & Zero Babbling", "Completely resolved unsolicited speech on camera start. Visual snapshots are delivered with forced real-time priority, ensuring accurate answers without excuses.", "NEW IN v5.0"),
