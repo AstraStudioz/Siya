@@ -383,8 +383,8 @@ class JarvisConversationService : Service() {
             else -> 0.025f // Normal default (lowered from 0.05f)
         }
     private val VAD_NOISE_MULTIPLIER = 1.5f // Lowered from 2.0f
-    private val VAD_START_FRAMES = 5
-    private val VAD_MIN_UTTERANCE_FRAMES = 10
+    private val VAD_START_FRAMES = 2
+    private val VAD_MIN_UTTERANCE_FRAMES = 3
     private var speakerStateActiveSinceMs = 0L
     // Loop guard: once tripped, ALL automation tools are refused until the user speaks again.
     @Volatile
@@ -1129,21 +1129,8 @@ class JarvisConversationService : Service() {
 
                             if (preferences.isOwnerVoiceEnabled && preferences.hasOwnerVoiceProfile() && !isCurrentTurnOwnerVoiceVerified && !isLeaseActive && hasActualSpeechInThisTurn) {
                                 val nonOwnerUtterance = currentTurnUserText.toString().trim()
-                                Log.w("JarvisService", "Turn completed by NON-OWNER: Suppressing response and logging ignored.")
-                                if (preferences.voiceStorage.saveGuestSpeech && nonOwnerUtterance.isNotEmpty()) {
-                                    val app = application as? JarvisApp
-                                    app?.chatRepository?.addTurn(
-                                        userText = "[Guest Speech]: $nonOwnerUtterance",
-                                        jarvisText = "[IGNORED] Voice not recognized as owner"
-                                    )
-                                }
-                                audioPlayer?.flush()
-                                currentTurnAssistantText.clear()
-                                currentTurnUserText.clear()
-                                _liveAssistantResponse.value = ""
-                                _liveUserTranscript.value = ""
+                                Log.w("JarvisService", "Turn voice verification soft check: Restricting sensitive tools, but keeping conversation active.")
                                 processPendingToolCalls(verified = false)
-                                return
                             }
 
                             val userUtterance = currentTurnUserText.toString().trim()
@@ -1459,9 +1446,9 @@ class JarvisConversationService : Service() {
             // Voice barge-in (headset or user-enabled voice interruption):
             val hasHeadset = headsetAudioRouter?.isHeadsetConnected() == true
             val allowBargeIn = hasHeadset || preferences.isVoiceInterruptionEnabled
-            if (allowBargeIn && isPlaying && amplitude > 0.25f) {
+            if (allowBargeIn && isPlaying && amplitude > 0.05f) {
                 consecutiveVoicedFrames++
-                if (consecutiveVoicedFrames >= 4) {
+                if (consecutiveVoicedFrames >= 2) {
                     Log.i("JarvisService", "Voice barge-in: user spoke over assistant (amp=$amplitude, hasHeadset=$hasHeadset)")
                     suppressAudioUntilTurnComplete = true
                     audioPlayer?.flush()
@@ -1476,12 +1463,16 @@ class JarvisConversationService : Service() {
                     _liveUserTranscript.value = ""
                     _liveAssistantResponse.value = ""
                     hasExecutedCommandInCurrentTurn = false
-                    totalVoicedFramesInCurrentUtterance = 4
+                    totalVoicedFramesInCurrentUtterance = 2
                     synchronized(currentUtteranceAudioStream) {
                         currentUtteranceAudioStream.reset()
                         currentUtteranceAudioStream.write(chunk)
                     }
-                    isCurrentTurnOwnerVoiceVerified = !preferences.isOwnerVoiceEnabled || !preferences.hasOwnerVoiceProfile()
+                    if (liveWebSocket?.isSessionReady() == true) {
+                        liveWebSocket?.sendAudioChunk(chunk)
+                        audioChunksSentInCurrentUtterance++
+                    }
+                    isCurrentTurnOwnerVoiceVerified = true
                     return@AudioRecorder
                 }
             } else {
@@ -1490,7 +1481,7 @@ class JarvisConversationService : Service() {
                 }
             }
 
-            if (isPlaying || _conversationState.value == ConversationState.THINKING || _conversationState.value == ConversationState.SPEAKING) {
+            if (isPlaying) {
                 com.jarvis.assistant.audio.MicDiagnosticsTracker.recordFrameDropped(
                     com.jarvis.assistant.audio.DropReason.OWN_PLAYBACK
                 )
@@ -1529,6 +1520,8 @@ class JarvisConversationService : Service() {
                     // Declare speech start only after several consecutive voiced frames (not a short noise blip)
                     if (consecutiveVoicedFrames >= VAD_START_FRAMES) {
                         if (!hasSpeechInCurrentUtterance) {
+                            thinkingTimeoutJob?.cancel()
+                            thinkingTimeoutJob = null
                             audioChunksSentInCurrentUtterance = 0
                             suppressAudioUntilTurnComplete = false
                             currentTurnUserText.clear()
@@ -1645,28 +1638,10 @@ class JarvisConversationService : Service() {
 
                             if (totalVoicedFramesInCurrentUtterance >= VAD_MIN_UTTERANCE_FRAMES || currentTurnUserText.trim().isNotEmpty()) {
                                 if (preferences.isOwnerVoiceEnabled && preferences.hasOwnerVoiceProfile() && !isCurrentTurnOwnerVoiceVerified) {
-                                    val nonOwnerQuery = currentTurnUserText.toString().trim()
-                                    Log.w("JarvisService", "Non-owner speech ended: '$nonOwnerQuery'; IGNORING utterance, suppressing reply, and recording to history.")
-                                    val app = application as? JarvisApp
-                                    val loggedQuery = if (nonOwnerQuery.isNotEmpty()) nonOwnerQuery else "(Unrecognized voice)"
-                                    app?.chatRepository?.addTurn(
-                                        userText = "[Non-Owner Voice]: $loggedQuery",
-                                        jarvisText = "[IGNORED] Voice not recognized as owner"
-                                    )
-                                    audioPlayer?.flush()
-                                    currentTurnAssistantText.clear()
-                                    currentTurnUserText.clear()
-                                    _liveUserTranscript.value = ""
-                                    _liveAssistantResponse.value = ""
-                                    hasSpeechInCurrentUtterance = false
-                                    hasSignalledUtteranceEnd = false
-                                    consecutiveVoicedFrames = 0
-                                    totalVoicedFramesInCurrentUtterance = 0
-                                    synchronized(currentUtteranceAudioStream) { currentUtteranceAudioStream.reset() }
-                                    setConversationState(ConversationState.IDLE)
+                                    Log.w("JarvisService", "Voice verification pending/soft match: restricting sensitive tools, but proceeding with user utterance.")
                                     processPendingToolCalls(verified = false)
-                                } else {
-                                    if (!hasSignalledUtteranceEnd) {
+                                }
+                                if (!hasSignalledUtteranceEnd) {
                                         hasSignalledUtteranceEnd = true
                                         // If screen capture is active, send one fresh snapshot right with the question
                                         if (com.jarvis.assistant.vision.ScreenCaptureManager.getInstance().isSharing.value) {
@@ -1711,7 +1686,6 @@ class JarvisConversationService : Service() {
                                             }
                                         }
                                     }
-                                }
                             } else {
                                 // Short acoustic pop / ambient noise - return cleanly to IDLE
                                 hasSpeechInCurrentUtterance = false

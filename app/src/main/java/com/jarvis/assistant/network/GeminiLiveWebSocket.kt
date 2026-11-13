@@ -1050,8 +1050,8 @@ class GeminiLiveWebSocket(
     fun sendToolResponse(callId: String, functionName: String, result: JSONObject) {
         try {
             val msg = JSONObject().apply {
-                put("tool_response", JSONObject().apply {
-                    put("function_responses", JSONArray().put(JSONObject().apply {
+                put("toolResponse", JSONObject().apply {
+                    put("functionResponses", JSONArray().put(JSONObject().apply {
                         put("id", callId)
                         put("name", functionName)
                         put("response", result)
@@ -1059,7 +1059,7 @@ class GeminiLiveWebSocket(
                 })
             }
             webSocket?.send(msg.toString())
-            Log.d(TAG, "Sent tool_response for $functionName: $result")
+            Log.d(TAG, "Sent toolResponse for $functionName: $result")
         } catch (e: Exception) {
             Log.e(TAG, "sendToolResponse failed: ${e.message}", e)
         }
@@ -1134,36 +1134,36 @@ class GeminiLiveWebSocket(
         if (!isConnected.get() || !isSetupComplete.get()) return
         try {
             val msg = JSONObject().apply {
-                put("client_content", JSONObject().apply {
-                    put("turn_complete", true)
+                put("clientContent", JSONObject().apply {
+                    put("turnComplete", true)
                 })
             }
             webSocket?.send(msg.toString())
-            Log.d(TAG, "Sent client_content turn_complete=true")
+            Log.d(TAG, "Sent clientContent turnComplete=true")
         } catch (e: Exception) {
             Log.e(TAG, "sendTurnComplete failed: ${e.message}", e)
         }
     }
 
     /**
-     * Sends a text prompt to Gemini Live using the client_content turn protocol.
+     * Sends a text prompt to Gemini Live using the clientContent turn protocol.
      */
     fun sendClientContent(text: String, turnComplete: Boolean = true) {
         if (!isConnected.get() || !isSetupComplete.get() || text.isBlank()) return
         try {
             val msg = JSONObject().apply {
-                put("client_content", JSONObject().apply {
+                put("clientContent", JSONObject().apply {
                     put("turns", JSONArray().put(JSONObject().apply {
                         put("role", "user")
                         put("parts", JSONArray().put(JSONObject().apply {
                             put("text", text)
                         }))
                     }))
-                    put("turn_complete", turnComplete)
+                    put("turnComplete", turnComplete)
                 })
             }
             webSocket?.send(msg.toString())
-            Log.d(TAG, "Sent client_content (turnComplete=$turnComplete, chars=${text.length})")
+            Log.d(TAG, "Sent clientContent (turnComplete=$turnComplete, chars=${text.length})")
         } catch (e: Exception) {
             Log.e(TAG, "sendClientContent failed: ${e.message}", e)
         }
