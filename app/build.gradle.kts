@@ -18,10 +18,10 @@ android {
     targetSdk = 35
     val buildVersionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull()
         ?: System.getenv("VERSION_CODE")?.toIntOrNull()
-        ?: 510
+        ?: 520
     val buildVersionName = project.findProperty("versionName")?.toString()
         ?: System.getenv("VERSION_NAME")
-        ?: "5.1"
+        ?: "5.2"
 
     versionCode = buildVersionCode
     versionName = buildVersionName

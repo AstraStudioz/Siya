@@ -1,10 +1,10 @@
 {
-  "versionCode": 510,
-  "versionName": "5.1",
-  "changelog": "• Continuous microphone pipeline with zero frame drops during thinking\n• 40ms sensitive speech detection & natural conversational barge-in\n• Official Gemini Live clientContent & turnComplete protocol\n• In-app direct updater with progress bar and 1-tap install",
-  "apkUrl": "https://github.com/AstraStudioz/Siya/releases/download/v5.1/SiyaAi-v5.1.apk",
-  "apkSha256": "880306bb3917025743a005716eee68b3c862aa4b728b18d7d79aab990dbb54dc",
-  "telegramUrl": "https://t.me/AstraStudiosPvt",
-  "mandatory": false,
-  "publishedAt": "2026-11-13T06:30:00Z"
+  "versionCode": 520,
+  "versionName": "5.2",
+  "changelog": "• Fixed voice & camera vision loop: resolved Gemini Live WebSocket 1007 error with official realtimeInput audio/video schema\n• Mandatory in-app auto updater: Update by ShivuOfc with direct APK download & install\n• Seamless full-duplex conversational voice & live camera streaming\n• ShivuOfc custom app development contact banner",
+  "apkUrl": "https://github.com/AstraStudioz/Siya/releases/download/v5.2/SiyaAi-v5.2.apk",
+  "apkSha256": "edbfcf1a3d46e2b039516a84560216176eb675cbdcc2eee54ce79af3b5d215a3",
+  "telegramUrl": "https://t.me/ShivuOfc",
+  "mandatory": true,
+  "publishedAt": "2026-11-13T14:55:00Z"
 }

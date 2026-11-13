@@ -80,7 +80,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Update via GitHub"
+                    android:text="Update by ShivuOfc"
                     android:textColor="?attr/themeTextPrimary"
                     android:textSize="16sp"
                     android:fontFamily="sans-serif-medium"
@@ -114,7 +114,7 @@
             android:id="@+id/tvDownloadStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Direct APK from GitHub Releases"
+            android:text="Official release build • Direct in-app install"
             android:textColor="?attr/themeTextMuted"
             android:textSize="12sp"
             android:fontFamily="sans-serif"
@@ -159,14 +159,15 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- OPTION 2: Telegram Channel Post Card -->
+    <!-- OPTION 2: Telegram Channel Post Card (Hidden as requested) -->
     <LinearLayout
         android:id="@+id/cardTelegramDownload"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/bg_jarvis_card"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -238,6 +239,78 @@
                 android:textAllCaps="false"
                 android:fontFamily="sans-serif-medium" />
         </LinearLayout>
+    </LinearLayout>
+
+    <!-- ShivuOfc Custom App Development Advertisement Banner -->
+    <LinearLayout
+        android:id="@+id/cardDevAd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_jarvis_card"
+        android:padding="16dp"
+        android:layout_marginTop="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_jarvis_icon_square">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_nav_settings"
+                    app:tint="?attr/themeAccent"
+                    android:contentDescription="Custom App Development" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Need a Custom App Built?"
+                    android:textColor="?attr/themeTextPrimary"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="If you want any type of app developed, you can contact ShivuOfc. Quality apps crafted at affordable prices!"
+                    android:textColor="?attr/themeTextMuted"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif"
+                    android:layout_marginTop="3dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnContactDev"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:minHeight="48dp"
+            android:background="@drawable/bg_jarvis_pill_button"
+            android:text="Contact @ShivuOfc on Telegram"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="12dp" />
     </LinearLayout>
 
 </LinearLayout>

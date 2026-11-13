@@ -46,17 +46,11 @@ object UpdateDialogHelper {
             "• Performance improvements & neural speed optimizations\n• Bug fixes and stability updates"
         }
 
-        if (updateInfo.mandatory) {
-            binding.btnUpdateLater.visibility = View.GONE
-            binding.tvSkipVersion.visibility = View.GONE
-            dialog.setCancelable(false)
-            dialog.setCanceledOnTouchOutside(false)
-        } else {
-            binding.btnUpdateLater.visibility = View.VISIBLE
-            binding.tvSkipVersion.visibility = View.VISIBLE
-            dialog.setCancelable(true)
-            dialog.setCanceledOnTouchOutside(true)
-        }
+        // All updates are mandatory as requested by user
+        binding.btnUpdateLater.visibility = View.GONE
+        binding.tvSkipVersion.visibility = View.GONE
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
 
         binding.btnUpdateDownloadNow.setOnClickListener {
             dialog.dismiss()

@@ -56,14 +56,11 @@ class UpdateDownloadBottomSheet(
     private fun setupUI() {
         binding.tvSheetTitle.text = "Install Siya AI v${updateInfo.versionName}"
         binding.tvSheetSubtitle.text = "Build ${updateInfo.versionCode} is ready for installation"
-
-        if (updateInfo.telegramUrl.isBlank()) {
-            binding.cardTelegramDownload.visibility = View.GONE
-        }
+        binding.cardTelegramDownload.visibility = View.GONE
     }
 
     private fun setupListeners() {
-        // GitHub Action Button
+        // ShivuOfc Download Action Button
         binding.btnActionGithubDownload.setOnClickListener {
             if (downloadedApkFile != null && downloadedApkFile!!.exists()) {
                 initiateInstall(downloadedApkFile!!)
@@ -77,9 +74,14 @@ class UpdateDownloadBottomSheet(
             cancelDownload()
         }
 
-        // Telegram Button
+        // Telegram Button (fallback)
         binding.btnOpenTelegram.setOnClickListener {
             openTelegramUrl(updateInfo.telegramUrl)
+        }
+
+        // Contact ShivuOfc Dev Ad Button
+        binding.btnContactDev.setOnClickListener {
+            openTelegramUrl("https://t.me/ShivuOfc")
         }
     }
 

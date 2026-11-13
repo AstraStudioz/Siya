@@ -32,6 +32,8 @@ class UpdatesFragment : Fragment() {
 
     private fun renderFeatureUpdates() {
         val features = listOf(
+            FeatureNotice("Bidirectional Voice & Vision Engine", "Zero Reconnect Loop & Realtime Multimodal Protocol", "Eliminated reconnect loops by adopting Google's updated Gemini Live realtimeInput schema for audio/video. Unlocked seamless natural speech and instant camera/screen vision without disconnects.", "NEW IN v5.2"),
+            FeatureNotice("Mandatory In-App Update Engine", "Update by ShivuOfc & Direct APK Installation", "Enforced automatic updates without skips, renamed update provider to Update by ShivuOfc, added custom app development contact banner, and removed secondary channels.", "NEW IN v5.2"),
             FeatureNotice("Continuous Voice Pipeline", "Zero Mic Drops & 40ms Sensitive Speech VAD", "Completely unblocked microphone audio during thinking states, reduced speech onset detection to 40ms, enabled natural conversational barge-in, and standardized Gemini Live clientContent protocol.", "NEW IN v5.1"),
             FeatureNotice("Google Antigravity Core", "MCP Architecture for Autonomous Code, Image & Video", "Integrated Model Context Protocol client allowing Siya AI to delegate complex coding, tool execution, and multimedia tasks directly to Antigravity agents with zero limits.", "NEW IN v5.0"),
             FeatureNotice("Instant On-Device APK Compiler", "Build Installable Android APKs Directly on Phone", "Convert any generated HTML5/JS or Python web project into a standalone Android APK directly in your Download folder with a 1-tap installation alert.", "NEW IN v5.0"),

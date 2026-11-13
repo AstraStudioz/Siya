@@ -88,12 +88,12 @@
             android:fontFamily="sans-serif" />
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Action Buttons -->
+    <!-- Action Buttons (Mandatory Update) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
+        android:gravity="center"
         android:layout_marginTop="20dp">
 
         <Button
@@ -107,25 +107,26 @@
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
             android:textAllCaps="false"
+            android:visibility="gone"
             android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btnUpdateDownloadNow"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
             android:minHeight="48dp"
             android:background="@drawable/bg_jarvis_pill_button"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="Download now"
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:fontFamily="sans-serif-medium"
             android:textStyle="bold"
             android:textAllCaps="false" />
     </LinearLayout>
 
-    <!-- Skip this version -->
+    <!-- Skip this version (Hidden for mandatory update) -->
     <TextView
         android:id="@+id/tvSkipVersion"
         android:layout_width="wrap_content"
@@ -137,6 +138,7 @@
         android:padding="6dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
+        android:visibility="gone"
         android:clickable="true"
         android:focusable="true" />
 

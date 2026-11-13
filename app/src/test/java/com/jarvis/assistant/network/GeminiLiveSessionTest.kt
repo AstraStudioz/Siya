@@ -303,11 +303,11 @@ class GeminiLiveSessionTest {
         val dummyBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
         val jsonString = GeminiLiveWebSocket.buildMediaChunkJson(dummyBase64)
 
-        // Must NOT use the obsolete 'video' key under realtimeInput
-        assertFalse("JSON must not contain obsolete 'video' wrapper", jsonString.contains("\"video\":"))
+        // Must NOT use deprecated mediaChunks
+        assertFalse("JSON must not contain deprecated mediaChunks", jsonString.contains("\"mediaChunks\":"))
 
-        // Must contain mediaChunks array with mimeType image/jpeg
-        assertTrue("JSON must contain mediaChunks", jsonString.contains("\"mediaChunks\":"))
+        // Must contain video object with mimeType image/jpeg
+        assertTrue("JSON must contain video wrapper", jsonString.contains("\"video\":"))
         assertTrue("JSON must contain mimeType image/jpeg", jsonString.contains("\"mimeType\":\"image/jpeg\""))
         assertTrue("JSON must contain base64 payload", jsonString.contains("\"data\":\"$dummyBase64\""))
 
@@ -315,13 +315,11 @@ class GeminiLiveSessionTest {
         val jsonElement = com.google.gson.JsonParser.parseString(jsonString).asJsonObject
         assertTrue(jsonElement.has("realtimeInput"))
         val realtimeInput = jsonElement.getAsJsonObject("realtimeInput")
-        assertFalse(realtimeInput.has("video"))
-        assertTrue(realtimeInput.has("mediaChunks"))
-        val mediaChunks = realtimeInput.getAsJsonArray("mediaChunks")
-        assertEquals(1, mediaChunks.size())
-        val firstChunk = mediaChunks.get(0).asJsonObject
-        assertEquals("image/jpeg", firstChunk.get("mimeType").asString)
-        assertEquals(dummyBase64, firstChunk.get("data").asString)
+        assertFalse(realtimeInput.has("mediaChunks"))
+        assertTrue(realtimeInput.has("video"))
+        val videoObj = realtimeInput.getAsJsonObject("video")
+        assertEquals("image/jpeg", videoObj.get("mimeType").asString)
+        assertEquals(dummyBase64, videoObj.get("data").asString)
     }
 
     @Test
@@ -329,14 +327,16 @@ class GeminiLiveSessionTest {
         val dummyAudioBase64 = "AAAA//8AAP//"
         val jsonString = GeminiLiveWebSocket.buildAudioChunkJson(dummyAudioBase64)
 
+        // Must NOT use deprecated mediaChunks
+        assertFalse("JSON must not contain deprecated mediaChunks", jsonString.contains("\"mediaChunks\":"))
+
         val jsonElement = com.google.gson.JsonParser.parseString(jsonString).asJsonObject
         assertTrue(jsonElement.has("realtimeInput"))
         val realtimeInput = jsonElement.getAsJsonObject("realtimeInput")
-        assertTrue(realtimeInput.has("mediaChunks"))
-        val mediaChunks = realtimeInput.getAsJsonArray("mediaChunks")
-        assertEquals(1, mediaChunks.size())
-        val firstChunk = mediaChunks.get(0).asJsonObject
-        assertEquals("audio/pcm;rate=16000", firstChunk.get("mimeType").asString)
-        assertEquals(dummyAudioBase64, firstChunk.get("data").asString)
+        assertFalse(realtimeInput.has("mediaChunks"))
+        assertTrue(realtimeInput.has("audio"))
+        val audioObj = realtimeInput.getAsJsonObject("audio")
+        assertEquals("audio/pcm;rate=16000", audioObj.get("mimeType").asString)
+        assertEquals(dummyAudioBase64, audioObj.get("data").asString)
     }
 }

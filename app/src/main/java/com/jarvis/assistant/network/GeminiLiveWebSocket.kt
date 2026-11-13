@@ -49,11 +49,11 @@ class GeminiLiveWebSocket(
             .build()
 
         fun buildMediaChunkJson(base64Image: String): String {
-            return "{\"realtimeInput\":{\"mediaChunks\":[{\"mimeType\":\"image/jpeg\",\"data\":\"$base64Image\"}]}}"
+            return "{\"realtimeInput\":{\"video\":{\"mimeType\":\"image/jpeg\",\"data\":\"$base64Image\"}}}"
         }
 
         fun buildAudioChunkJson(base64Audio: String): String {
-            return "{\"realtimeInput\":{\"mediaChunks\":[{\"mimeType\":\"audio/pcm;rate=16000\",\"data\":\"$base64Audio\"}]}}"
+            return "{\"realtimeInput\":{\"audio\":{\"mimeType\":\"audio/pcm;rate=16000\",\"data\":\"$base64Audio\"}}}"
         }
     }
 
@@ -141,14 +141,14 @@ class GeminiLiveWebSocket(
                     // Send setup message FIRST before enabling audio streaming
                     sendSetupMessage(webSocket)
 
-                    // 8-second timer: server must acknowledge setupComplete within 8s
+                    // 20-second timer: server must acknowledge setupComplete within 20s
                     setupTimeoutJob?.cancel()
                     setupTimeoutJob = coroutineScope?.launch(Dispatchers.IO) {
-                        delay(8000)
+                        delay(20000)
                         if (!isSetupComplete.get() && !isManuallyStopped.get()) {
-                            Log.w("SiyaLive", "No setupComplete received within 8 seconds on model $activeModel")
-                            if (!tryFallbackModel(1000, "Setup timeout (no setupComplete in 8s)")) {
-                                listener.onError("Setup timeout: Server did not complete setup within 8s", isFatal = true, errorCode = "SETUP_TIMEOUT")
+                            Log.w("SiyaLive", "No setupComplete received within 20 seconds on model $activeModel")
+                            if (!tryFallbackModel(1000, "Setup timeout (no setupComplete in 20s)")) {
+                                listener.onError("Setup timeout: Server did not complete setup within 20s", isFatal = true, errorCode = "SETUP_TIMEOUT")
                                 listener.onConnectionStateChanged("SETUP TIMEOUT")
                             }
                         }
